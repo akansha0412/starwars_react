@@ -36,7 +36,7 @@ class Login extends Component {
 
   onLogin = () => {
         this.setState({loading : true})
-        fetch("https://swapi.co/api/people/")
+        fetch("https://swapi.co/api/people/?search=" + this.state.username)
         .then(response => {
           if (!response.ok) {
             throw Error(response.statusText);
@@ -44,7 +44,6 @@ class Login extends Component {
           return response.json()
         })
         .then(data => this.validateLogin(data.results))
-        .then(() => this.setState({loading : false}))
         .catch(error => {
           this.setState({
             errorMessage : "Something went wrong. Please try again.",
@@ -55,24 +54,20 @@ class Login extends Component {
   }
 
   validateLogin = (users) => {
-    var authenticatedUser;
-    users.forEach(user => {
-      if(user.name === this.state.username && user.birth_year === this.state.password) {
-        authenticatedUser = user;
-      }
-    })
-    if (authenticatedUser) {
-      localStorage.setItem('user', JSON.stringify(authenticatedUser));
-      this.moveToHomeSceen(authenticatedUser)
+    var searchedUser = users.length === 1 ? users[0] : null
+    if (searchedUser && searchedUser.name === this.state.username && searchedUser.birth_year === this.state.password) {
+      localStorage.setItem('user', JSON.stringify(searchedUser));
+      this.moveToHomeSceen()
       return
     }
     this.setState({
       errorMessage : "Invalid Username or Password",
-      showModal : true
+      showModal : true,
+      loading: false
     })
   }
 
-  moveToHomeSceen = (authenticatedUser) => {
+  moveToHomeSceen = () => {
     this.props.history.push("/")
   }
 
