@@ -30,7 +30,6 @@ render() {
           Welcome, {user.name}
           <button style={{width:'auto', position:'absolute', right:'0'}} className="button-normal" onClick={this.onLogout} >Logout</button>
         </h3>
-        // <div style={{margin:'40px 10px'}}>
           <form>
               <input style={{padding:'5px', marginLeft:'40px'}} type="text" className="input-search" placeholder="Search planets" onChange={(event) =>this.filterList(event.target.value)}/>
           </form>
@@ -93,7 +92,6 @@ render() {
   }
 
   loadNextPage = () => {
-    console.log(this.state.nextPage);
     if (!this.state.nextPage) {
       return
     }
