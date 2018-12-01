@@ -6,7 +6,7 @@ class List extends Component {
       <ul className="list-group">
       {
         this.props.items.map((item) => {
-          return <li style={{color:'white', margin:'10px 0px', width:'auto', height:'auto',fontSize:this.calculateTextSize(item, this.props.items)}} key={item.name} onClick={() => this.props.onItemClick(item)} >{item.name}</li>
+          return <li style={{color:'white', margin:'10px 0px', width:'50px', height:'auto',fontSize:this.calculateTextSize(item, this.props.items)}} key={item.name} onClick={() => this.props.onItemClick(item)} >{item.name}</li>
         })
        }
       </ul>

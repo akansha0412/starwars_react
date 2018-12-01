@@ -34,7 +34,7 @@ render() {
           <form>
               <input style={{padding:'5px', marginLeft:'40px'}} type="text" className="input-search" placeholder="Search planets" onChange={(event) =>this.filterList(event.target.value)}/>
           </form>
-          <List items={this.state.items} onItemClick={this.onListItemClicked}/>
+          <List style={{width:'50px'}} items={this.state.items} onItemClick={this.onListItemClicked}/>
           <button style={{width:'auto', marginLeft:'40px'}} disabled={!this.state.nextPage} className="button-normal" onClick={this.loadNextPage} >Load More</button>
         </div>
     </div>
