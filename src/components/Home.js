@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import List from './List.js'
 import loader from './../loader.gif';
 import Modal from './../Modal.js'
+import PlanetsInfo from './PlanetsInfo.js'
+
 
 class Home extends Component {
 
@@ -22,7 +24,6 @@ render() {
   return (
     <div>
     <Modal show = {this.state.showModal} children = {this.state.errorMessage} handleClose = {() => this.setState({showModal : false})} ></Modal>
-    <InfoModal show = {this.state.showInfoModal} children = {this.state.selectedPlanet} handleClose = {() => this.setState({showInfoModal : false})} ></InfoModal>
     <div className={this.state.loading ? "modal display-block" : "modal display-none"}>
         <img src={loader} className="loader" alt="loader" />
     </div>
@@ -34,7 +35,8 @@ render() {
           <form>
               <input style={{padding:'5px', marginLeft:'40px'}} type="text" className="input-search" placeholder="Search planets" onChange={(event) =>this.filterList(event.target.value)}/>
           </form>
-          <List style={{width:'50px'}} items={this.state.items} onItemClick={this.onListItemClicked}/>
+          <List  items={this.state.items} onItemClick={this.onListItemClicked}/>
+          <PlanetsInfo  show= {this.state.showInfoModal} position = {this.state.planets.indexOf(this.state.selectedPlanet)} children = {this.state.selectedPlanet} handleClose = {() => this.setState({showInfoModal : false})} ></PlanetsInfo>
           <button style={{width:'auto', marginLeft:'40px'}} disabled={!this.state.nextPage} className="button-normal" onClick={this.loadNextPage} >Load More</button>
         </div>
     </div>
@@ -128,20 +130,5 @@ render() {
   }
 
 }
-
-const InfoModal = (props) => {
-    return (
-      <div className={props.show ? "modal display-block" : "modal display-none"}>
-        <div className="modal-main App">
-          <p style={{fontSize:'12px'}}>Welcome to planet <b>{props.children.name}</b></p>
-          <p style={{fontSize:'12px'}}>It has a population of <b>{props.children.population}</b>.</p>
-          <p style={{fontSize:'12px'}}>With Rotation period of <b>{props.children.rotation_period} days</b> &amp; Orbital period of <b>{props.children.orbital_period} days</b></p>
-          <button className="button-normal" onClick={props.handleClose}>Close</button>
-        </div>
-
-      </div>
-  );
-}
-
 
 export default Home;
