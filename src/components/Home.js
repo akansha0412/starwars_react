@@ -3,6 +3,7 @@ import List from './List.js'
 import loader from './../loader.gif';
 import Modal from './../Modal.js'
 import PlanetsInfo from './PlanetsInfo.js'
+import {debounce} from 'throttle-debounce';
 
 
 class Home extends Component {
@@ -16,7 +17,9 @@ class Home extends Component {
     loading : false,
     selectedPlanet : {},
     nextPage : null,
-    searchText: ""
+    searchText: "",
+    searchAttempts: 0,
+    timeElapsed: 0
   }
 
 render() {
@@ -45,7 +48,7 @@ render() {
 
   componentDidMount() {
     this.setState({loading : true})
-    fetch("https://swapi.co/api/planets/")
+    fetch("https://swapi.co/api/planets/?search=" + this.state.searchText)
       .then(response => {
         if (!response.ok) {
           throw Error(response.statusText);
@@ -83,15 +86,10 @@ render() {
   }
 
   filterList = (value) => {
-    var updatedList = this.state.planets;
-    updatedList = updatedList.filter(function(item) {
-      return item.name.toLowerCase().search(
-        value.toLowerCase()) !== -1;
-    });
     this.setState({
-      items: updatedList,
       searchText: value
     });
+    this.onSearchQuery()
   }
 
   loadNextPage = () => {
@@ -112,7 +110,7 @@ render() {
           planets: this.state.planets.concat(data.results),
           nextPage: data.next
         })
-        this.filterList(this.state.searchText)
+      this.populateList(this.state.planets)
       })
       .then(() => this.setState({loading : false}))
       .catch(error => {
@@ -124,9 +122,62 @@ render() {
       })
   }
 
+  onSearchQuery = debounce(1000, () => {
+    const user = JSON.parse(localStorage.getItem('user'))
+    if ('Luke Skywalker' === user.name) {
+      this.componentDidMount()
+      return
+    }
+    var searchAttempts = this.state.searchAttempts
+    searchAttempts++
+
+    if (searchAttempts > 5) {
+      this.setState({
+        errorMessage: `5 Search attempts per minute reached. Retry in ${59 - this.state.timeElapsed} seconds`,
+        showModal: true
+      })
+      return
+    }
+
+    if (searchAttempts === 1) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = setTimeout(this.resetTimer, 60000)
+      clearInterval(this.intervalId)
+      this.intervalId = setInterval(this.calculateSeconds, 1000)
+    }
+    this.setState({
+      searchAttempts : searchAttempts
+    })
+
+    this.componentDidMount()
+  });
+
+  resetTimer = () => {
+    this.setState({
+      searchAttempts : 0,
+      timeElapsed: 0,
+      showModal: false
+    })
+    clearInterval(this.intervalId)
+  }
+
+  calculateSeconds = () => {
+    this.setState({
+      errorMessage: `5 Search attempts per minute reached. Retry in ${59 - this.state.timeElapsed} seconds`,
+      timeElapsed: this.state.timeElapsed + 1
+    })
+  }
+
   onLogout = () => {
     localStorage.removeItem('user');
+    clearTimeout(this.timeoutId)
+    clearInterval(this.intervalId)
     this.props.history.push("/login")
+  }
+
+  componentWillUnnount() {
+    clearTimeout(this.timeoutId)
+    clearInterval(this.intervalId)
   }
 
 }
