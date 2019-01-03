@@ -124,7 +124,7 @@ render() {
 
   onSearchQuery = debounce(1000, () => {
     const user = JSON.parse(localStorage.getItem('user'))
-    if ('Luke Skywalker' === user.name) {
+    if ('Luke Skywalker' === user.name || this.state.searchText === '') {
       this.componentDidMount()
       return
     }
